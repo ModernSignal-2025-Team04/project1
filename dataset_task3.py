@@ -23,7 +23,7 @@ class Task3AugDataset(Dataset):
     - 三者按索引一一对应
     """""
 
-    def __init__(self, use_feddg=True, use_cyclegan=True):
+    def __init__(self, use_feddg=True, use_cyclegan=True, use_domain1=True):
         super().__init__()
 
         # 只用 domain1 的 train 作为标签来源
@@ -32,6 +32,7 @@ class Task3AugDataset(Dataset):
         # 三种来源开关
         self.use_feddg = use_feddg
         self.use_cyclegan = use_cyclegan
+        self.use_domain1 = use_domain1
 
         # project 根目录
         self.project_root = Path(__file__).resolve().parent
@@ -59,7 +60,10 @@ class Task3AugDataset(Dataset):
         img_orig, mask = self.base[idx]   # img_orig: [1,256,256]
 
         # 准备候选图像来源
-        candidates = [("orig", None)]
+        if not self.use_domain1:
+            candidates = []
+        else:
+            candidates = [("orig", None)]
 
         # 对应的文件名：和我们生成时保持一致
         feddg_path = self.feddg_dir / f"domain1_to_3_{idx}.png"

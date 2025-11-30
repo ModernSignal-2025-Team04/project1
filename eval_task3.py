@@ -9,7 +9,8 @@ from unet import UNet2D
 from metrics import dice_coeff, hd95, assd
 
 
-CKPT = "checkpoints/task3_unet_augmix.pth"   # Task3 的模型权重
+# CKPT = "checkpoints/task3_unet_augmix.pth"   # Task3 的模型权重
+CKPT = "checkpoints/task3_mean_teacher_student_best.pth"   # Task3 的模型权重
 
 
 def evaluate_domain(model, domain_id, device):

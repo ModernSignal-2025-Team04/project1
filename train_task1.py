@@ -8,7 +8,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from dataset_faz import FazSegDataset
-from unet import UNet2D
+from model_zoo import get_model
 from metrics import dice_coeff
 
 
@@ -17,6 +17,10 @@ from metrics import dice_coeff
 # 可选: "none", "flip", "flip_rotate"
 # ==========================
 AUG_MODE = "none"
+# ==========================
+# 模型名称，可选 "UNet2D", "NestedUNet", "TransUNet", "nnUNet"
+# ==========================
+MODEL_NAME = "UNet2D"
 
 
 # Dice Loss（用概率计算）
@@ -37,7 +41,7 @@ def train():
     train_loader = DataLoader(train_set, batch_size=4, shuffle=True, num_workers=0)
 
     # 模型
-    model = UNet2D(in_ch=1, num_classes=1).to(device)
+    model = get_model(MODEL_NAME, in_ch=1, num_classes=1).to(device)
 
     # 损失函数
     bce = nn.BCEWithLogitsLoss()
@@ -48,7 +52,7 @@ def train():
     # 保存模型的目录
     ckpt_dir = Path("checkpoints")
     ckpt_dir.mkdir(exist_ok=True)
-    ckpt_path = ckpt_dir / f"unet_faz_aug_{AUG_MODE}.pth"
+    ckpt_path = ckpt_dir / f"{MODEL_NAME}_faz_aug_{AUG_MODE}.pth"
 
     best_dice = 0.0
 

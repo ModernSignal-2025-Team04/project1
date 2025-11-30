@@ -2,7 +2,7 @@
 from pathlib import Path
 
 # ====== 数据根目录 ======
-DATA_ROOT = Path("/Users/xrz/Documents/project1/data")
+DATA_ROOT = Path("data")
 
 # ====== 数据集选择 ======
 DATASET_NAME = "FAZ"   # 使用 FAZ

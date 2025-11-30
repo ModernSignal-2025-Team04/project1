@@ -50,7 +50,7 @@ def extract_features_faz(domain_id, encoder, device, n_samples=60):
 # ---------- 从文件夹中读迁移后的图像并提特征 ----------
 
 def extract_features_from_folder(folder, encoder, device, n_samples=60):
-    folder = Path(folder)
+    folder = Path(PROJECT_ROOT) / "task2" / folder
     paths = sorted(list(folder.glob("*.png")))
     if len(paths) == 0:
         raise RuntimeError(f"No png images found in {folder}")
@@ -90,7 +90,7 @@ if __name__ == "__main__":
     print("Using:", device)
 
     # 1. 加载Task1训练好的UNet做特征提取（更有意义）
-    ckpt = Path(PROJECT_ROOT) / "checkpoints" / "unet_faz_aug_none.pth"
+    ckpt = Path(PROJECT_ROOT) / "checkpoints" / "UNet2D_faz_aug_none.pth"
     unet = UNet2D(in_ch=1, num_classes=1)
     unet.load_state_dict(torch.load(ckpt, map_location=device))
     unet.eval()
@@ -109,15 +109,20 @@ if __name__ == "__main__":
     print("Extracting features for CycleGAN(domain1→3)...")
     feats_cyc = extract_features_from_folder("cyclegan_generated", encoder, device)
 
+    print("Extracting features for CUT(domain1→3)...")
+    feats_cut = extract_features_from_folder("cut_generated", encoder, device)
+
     # 3. 计算相对domain3的距离
     d_d1_d3  = mean_l2_distance(feats_d1,  feats_d3)
     d_fed_d3 = mean_l2_distance(feats_fed, feats_d3)
     d_cyc_d3 = mean_l2_distance(feats_cyc, feats_d3)
+    d_cut_d3 = mean_l2_distance(feats_cut, feats_d3)
 
     print("\n===== Feature-space distances (mean L2) to Domain3 =====")
     print(f"Original Domain1  vs Domain3: {d_d1_d3:.4f}")
     print(f"FedDG(1→3)       vs Domain3: {d_fed_d3:.4f}")
     print(f"CycleGAN(1→3)    vs Domain3: {d_cyc_d3:.4f}")
+    print(f"CUT(1→3)         vs Domain3: {d_cut_d3:.4f}")
 
     print("\nInterpretation:")
     print("  数值越小，说明这一类图像在UNet特征空间里越接近Domain3。")

@@ -5,14 +5,15 @@ from pathlib import Path
 from tqdm import tqdm
 
 from dataset_faz import FazSegDataset
-from unet import UNet2D
+from model_zoo import get_model
 from metrics import dice_coeff, hd95, assd
 
 
 # ------------------------------
 # 选择要测试的模型文件
 # ------------------------------
-CKPT = "checkpoints/unet_faz_aug_none.pth"   # 用训练出来的最好那一个
+MODEL_NAME = "UNet2D"
+CKPT = f"checkpoints/{MODEL_NAME}_faz_aug_none.pth"   # 用训练出来的最好那一个
 
 
 def evaluate_domain(model, domain_id, device):
@@ -59,7 +60,7 @@ def main():
     print("Using device:", device)
 
     # 加载模型
-    model = UNet2D(in_ch=1, num_classes=1).to(device)
+    model = get_model(MODEL_NAME, in_ch=1, num_classes=1).to(device)
     model.load_state_dict(torch.load(CKPT, map_location=device))
 
     results = {}
